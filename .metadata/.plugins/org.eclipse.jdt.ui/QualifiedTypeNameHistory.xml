@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="java.lang.System"/>
+<fullyQualifiedTypeName name="java.lang.Integer"/>
+<fullyQualifiedTypeName name="java.awt.Window"/>
+<fullyQualifiedTypeName name="javax.swing.JOptionPane"/>
+<fullyQualifiedTypeName name="javax.xml.ws.spi.http.HttpHandler"/>
+<fullyQualifiedTypeName name="org.jnetpcap.packet.JRegistry"/>
+<fullyQualifiedTypeName name="org.jnetpcap.protocol.tcpip.Http"/>
+<fullyQualifiedTypeName name="org.jnetpcap.protocol.voip.Sip.ContentType"/>
+<fullyQualifiedTypeName name="org.jnetpcap.protocol.tcpip.Udp"/>
+</qualifiedTypeNameHistroy>

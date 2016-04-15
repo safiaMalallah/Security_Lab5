@@ -1,0 +1,243 @@
+
+
+import java.util.Scanner;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.jnetpcap.Pcap;
+import org.jnetpcap.packet.JPacket;
+import org.jnetpcap.packet.JPacketHandler;
+import org.jnetpcap.packet.Payload;
+import org.jnetpcap.protocol.network.Ip4;
+import org.jnetpcap.protocol.tcpip.Tcp;
+
+public class ids {
+	public static void main(String[] args) {
+		
+		boolean con = true;
+		while(con)
+		{
+		Scanner reader = new Scanner(System.in);  // Reading from System.in
+		System.out.println("Select Policy:\n1. Blame Attack 1\n2. Blame Attack 2\n3. General Buffer Overflow\n4. Plaintext POP\n5. Simulated  ");
+		String n = reader.next(); 
+		System.out.println("Select file:\n1.trace1.pcap \n2.trace2.pcap \n3.trace3.pcap \n4.trace4.pcap \n5.trace5.pcap ");
+		String n2 = reader.next(); 
+		
+		 n = "1";
+		 n2 = "1";
+		
+	//	IDS("trace" + n2 + ".pcap", Integer.parseInt(n));
+		
+		System.out.println("Press N to exist, or any char to continue");
+		String temp = reader.next(); 
+		
+		if (temp.equals("N"))
+		{
+			con = false ;
+			System.out.println("Thank you and Goodbye");
+		}
+	
+		}
+	}
+	
+	public static void IDS(String n1, int policy)	
+	{
+		policy tt = new policy(1)  ;
+		//int sa = tt.xx();
+		
+		final String FILENAME = n1;
+		final StringBuilder errbuf = new StringBuilder();
+
+		final Pcap pcap = Pcap.openOffline(FILENAME, errbuf);
+		if (pcap == null) {
+			//System.err.println(errbuf); 
+			return;
+		}
+		Map<String, Integer> ScrMap = new HashMap<String, Integer>();
+		Map<String, Integer> DesMap = new HashMap<String, Integer>();
+
+
+		pcap.loop(Pcap.LOOP_INFINITE, new JPacketHandler<StringBuilder>() {
+			final Tcp tcp = new Tcp();
+			final Ip4 ip = new Ip4();
+						
+			public void nextPacket(JPacket packet, StringBuilder errbuf) {
+				if (packet.hasHeader(Tcp.ID) && packet.hasHeader(Ip4.ID)) {
+					/*I add this line*/
+				//	System.out.println(packet);
+					
+					Payload payload = new Payload();
+					
+
+                 if (packet.hasHeader(payload)) {
+                    // System.out.println( payload);
+                     byte [] payloadContent = payload.getPayload();
+                     String strPayloadContent = new String(payloadContent);
+                   //  System.out.println("payload content = [" + payloadContent + "]");
+                     }
+
+							
+					
+					packet.getHeader(tcp);
+				/*	
+					System.out.printf("tcp.dst_port=%d%n", tcp.destination());
+					System.out.printf("tcp.src_port=%d%n", tcp.source());
+					System.out.printf("tcp.ack=%x%n", tcp.ack());
+				*/
+		             packet.getHeader(ip);
+		             byte[] dIP = new byte[4], sIP = new byte[4];
+		             dIP = packet.getHeader(ip).destination();
+		             sIP = packet.getHeader(ip).source();
+		             String sourceIP = org.jnetpcap.packet.format.FormatUtils.ip(sIP);
+		             String destinationIP = org.jnetpcap.packet.format.FormatUtils.ip(dIP);
+/*
+ * 
+ */////////////
+		             StringBuilder str = new StringBuilder();
+		             
+		             packet.getUTF8String(0, str, packet.getTotalSize());
+		        
+		             String rawStringData = str.toString();
+		           //  System.out.println("SAfia" + rawStringData + "Ennnnnnd");
+		             if (rawStringData.contains("Hello")) {
+		                 // we have found a packet that contains the text "Hello"
+		                 return; // ignore it
+		             }
+		             // do something with the packet that does not contain "Hello"
+		             
+		             ///////////////////
+		             
+		             
+		             if (packet.hasHeader(payload)) {
+		            //	 System.out.printf("payload length=%d\n", payload.getLength());
+		            	 byte[] payloadContent = payload.getByteArray(0, payload.size());
+		            	 String strPayloadContent = new String(payloadContent);
+		            //	 System.out.println("payload content = [" + strPayloadContent + "]");
+		            	 }
+		             
+		             
+		             
+		             
+		             ///////////////
+		             
+		              //  System.out.printf("tcp.ip_src=%s%n",sourceIP);
+		                //System.out.printf("tcp.ip_dest=%s%n",destinationIP);*/
+		             if (tcp.flags_SYN()) {  
+		                if(!ScrMap.containsKey(sourceIP)){ 
+							ScrMap.put(sourceIP,1);
+						}
+						else{
+							int TempValue = ScrMap.get(sourceIP);
+							TempValue ++;
+							ScrMap.put(sourceIP, TempValue);
+						}
+		                
+						if(!DesMap.containsKey(destinationIP)){ 
+							DesMap.put(destinationIP,1);
+						}
+						else{
+							int TempValue = DesMap.get(destinationIP);
+							TempValue ++;
+							DesMap.put(destinationIP, TempValue);
+						}
+		                
+		             }   	 
+					
+             }
+
+			}
+
+		}, errbuf);
+	
+	
+
+	}
+}
+ class  policy
+{
+	int id;
+	String host;
+	String name;
+	String type;
+	String proto;
+	String host_port;
+	String attacker_port;
+	String attacker;
+	String to_host;
+	String from_host;
+	String to_host2;
+	String from_host2;
+	String from_host3;
+	
+	policy(int id)
+	{
+		this.id = id;
+		
+		switch (id) {
+        case 1: 
+        	name="Blame Attack 1";
+        	type="stateless";
+        	proto="tcp";
+        	host_port="5551";
+        	attacker_port="any";
+        	attacker="any";
+        	to_host="Now I own your computer";
+        	break;
+        case 2: 
+        	host="192.168.0.1";
+        	name="Blame Attack 2" ;
+        	type="stateful";
+        	host_port="5551";
+        	attacker_port="any";
+        	attacker="any";
+        	to_host="Now I own your computer";
+            break;
+        case 3:  
+        	host="192.168.0.1";
+        	name="Buffer Overflow";
+        	type="stateful";
+        	host_port="5551";
+        	attacker_port="any";
+        	attacker="any";
+        	to_host="\\x90{10}.*\\xcd\\x80";            	
+        	break;
+        case 4: 
+        	host="192.168.0.1";
+        	name="Plaintext POP";
+        	type="stateless";
+        	proto="tcp";
+        	host_port="110";
+        	attacker_port="any";
+        	attacker="any";
+        	from_host="\\+OK.*\\r\\n";
+        	to_host="USER .*\\r\\n";
+        	from_host="\\+OK.*\\r\\n";
+        	to_host="PASS.*\r\n";
+        	from_host="\\+OK.*\\r\\n";	
+        break;
+        case 5: 
+        	host="192.168.0.1";
+        	name="TFTP attacker boot";
+        	type="stateless";
+        	proto="udp";
+        	host_port="any";
+        	attacker_port="69";
+        	attacker="any";
+        	from_host="vmlinuz";
+        	to_host="\\x00\\x03\\x00\\x01";
+        break;
+        default: break;
+      
+    }
+   
+			
+	}
+
+  public int xx()
+{
+	return 1;
+	
+}
+
+}
+

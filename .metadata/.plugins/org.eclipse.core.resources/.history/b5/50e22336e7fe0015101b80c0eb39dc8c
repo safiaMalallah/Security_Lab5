@@ -1,0 +1,76 @@
+import java.util.HashMap;  
+import java.util.List;  
+import java.util.Map;
+import java.util.Scanner;
+
+import org.jnetpcap.Pcap;  
+import org.jnetpcap.nio.JMemory;  
+import org.jnetpcap.packet.JFlow;  
+import org.jnetpcap.packet.JFlowKey;  
+import org.jnetpcap.packet.JFlowMap;  
+import org.jnetpcap.packet.JPacket;  
+import org.jnetpcap.packet.JPacketHandler;  
+import org.jnetpcap.packet.JScanner;  
+import org.jnetpcap.packet.PcapPacket;
+import org.jnetpcap.packet.PcapPacketHandler;
+import org.jnetpcap.protocol.tcpip.Http;  
+import org.jnetpcap.protocol.tcpip.Tcp;
+import org.jnetpcap.util.PcapPacketArrayList; 
+
+
+public class lab5Class {
+	
+	 
+	public static void main(String[] args) {
+		String name;
+	       int age;
+	     
+	       Scanner in = new Scanner(System.in);
+	       System.out.println("Enter Policy Name:");
+	       name = in.nextLine();
+	       System.out.println("Enter .pcap trace file Name:");
+	       age=in.nextInt();
+	       in.close();    
+	       
+		readOfflineFiles() ;
+	}
+	 public static PcapPacketArrayList readOfflineFiles() 
+	  {
+	
+		final String FileAddress = "trace1.pcap";  
+		
+		 final StringBuilder errbuf = new StringBuilder();
+		 Pcap pcap = Pcap.openOffline(FileAddress, errbuf);
+		 if (pcap == null) {  
+			              try {
+							throw new Exception(errbuf.toString());
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} 
+			          }
+		 
+		 
+		 PcapPacketHandler<PcapPacketArrayList> jpacketHandler = new PcapPacketHandler<PcapPacketArrayList>() {  
+			          
+			               public void nextPacket(PcapPacket packet, PcapPacketArrayList PaketsList) {  
+			    
+			                  PaketsList.add(packet);
+			               }  
+			          };
+			          
+			          
+			          try {  
+			        	            PcapPacketArrayList packets = new PcapPacketArrayList();
+			        	            pcap.loop(-1,jpacketHandler,packets);
+			        	            
+			        	             return packets;
+			        	            } finally {  
+			        	              //Last thing to do is close the pcap handle 
+			        	             pcap.close();  
+			        	         } 
+		
+		
+	}
+	
+}
